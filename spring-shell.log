@@ -1,0 +1,8 @@
+// dataflow 1.2.0.RELEASE log opened at 2019-01-09 18:20:53
+help
+task list
+stream list
+ help
+task list
+// [failed] task validate person
+task validate person-job
