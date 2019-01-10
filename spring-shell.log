@@ -6,3 +6,7 @@ stream list
 task list
 // [failed] task validate person
 task validate person-job
+// dataflow 1.2.0.RELEASE log opened at 2019-01-10 13:11:23
+// [failed] app import --uri /Users/albenyuan/Desktop/spring-cloud-data-fow/config/spring-cloud-stream-app-descriptor-Celsius.BUILD-SNAPSHOT.stream-apps-kafka-10-maven.properties
+// [failed] app import --uri /Users/albenyuan/Desktop/spring-cloud-data-flow/config/spring-cloud-stream-app-descriptor-Celsius.BUILD-SNAPSHOT.stream-apps-kafka-10-maven.properties
+app import --uri file:///Users/albenyuan/Desktop/spring-cloud-data-flow/config/spring-cloud-stream-app-descriptor-Celsius.BUILD-SNAPSHOT.stream-apps-kafka-10-maven.properties

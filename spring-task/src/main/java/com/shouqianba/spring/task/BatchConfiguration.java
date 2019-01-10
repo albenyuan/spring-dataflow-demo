@@ -8,21 +8,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 
 import javax.sql.DataSource;
 
@@ -35,7 +31,7 @@ import javax.sql.DataSource;
 public class BatchConfiguration {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(BatchConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BatchConfiguration.class);
 
     @Autowired
     public JobBuilderFactory jobBuilderFactory;
@@ -44,7 +40,10 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    private DataSource dataSource;
+    public ResourceLoader resourceLoader;
+
+    @Autowired
+    public DataSource dataSource;
 
     @Value("${system.file.person}")
     private String personFile;
@@ -52,21 +51,26 @@ public class BatchConfiguration {
 
     // tag::readerwriterprocessor[]
     @Bean
-    public FlatFileItemReader<Person> reader() {
+    public FlatFileItemReader<Person> reader(@Value("#{jobParameters['localFilePath']}") String filePath) {
+        LOGGER.info("localFilePath:{}", filePath);
+        if (!filePath.matches("[a-z]+:.*")) {
+            filePath = "file:" + filePath;
+        }
+        LOGGER.info("personFile:{}", personFile);
         FlatFileItemReader reader = new PersonItemReader();
-        reader.setResource(new ClassPathResource(personFile));
+        reader.setResource(resourceLoader.getResource(filePath));
         return reader;
     }
 
     @Bean
     public PersonItemProcessor processor() {
-        logger.info("processor:new PersonItemProcessor()");
+        LOGGER.info("processor:new PersonItemProcessor()");
         return new PersonItemProcessor();
     }
 
     @Bean
     public JdbcBatchItemWriter<Person> writer() {
-        logger.info("writer:JdbcBatchItemWriter<Person>");
+        LOGGER.info("writer:JdbcBatchItemWriter<Person>");
         PersonItemWriter writer = new PersonItemWriter();
         writer.setDataSource(dataSource);
         return writer;
@@ -76,7 +80,7 @@ public class BatchConfiguration {
     // tag::jobstep[]
     @Bean
     public Job importUserJob(JobCompletionNotificationListener listener) {
-        logger.info("import user job.");
+        LOGGER.info("import user job.");
         return jobBuilderFactory.get("importUserJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -85,27 +89,27 @@ public class BatchConfiguration {
                 .build();
     }
 
-    @Bean
-    public Job job() {
-        return jobBuilderFactory.get("job")
-                .start(stepBuilderFactory.get("jobStep1")
-                        .tasklet(new Tasklet() {
-
-                            @Override
-                            public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-
-                                logger.info("Job was run");
-                                return RepeatStatus.FINISHED;
-                            }
-                        }).build()).build();
-    }
+//    @Bean
+//    public Job job() {
+//        return jobBuilderFactory.get("job")
+//                .start(stepBuilderFactory.get("jobStep1")
+//                        .tasklet(new Tasklet() {
+//
+//                            @Override
+//                            public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+//
+//                                LOGGER.info("Job was run");
+//                                return RepeatStatus.FINISHED;
+//                            }
+//                        }).build()).build();
+//    }
 
     @Bean
     public Step step1() {
-        logger.info("step1.");
+        LOGGER.info("step1.");
         return stepBuilderFactory.get("step1")
                 .<Person, Person>chunk(10)
-                .reader(reader())
+                .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
                 .build();
