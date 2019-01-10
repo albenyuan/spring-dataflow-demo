@@ -8,12 +8,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -40,23 +45,18 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public ResourceLoader resourceLoader;
+    private ResourceLoader resourceLoader;
 
     @Autowired
-    public DataSource dataSource;
+    private DataSource dataSource;
 
-    @Value("${system.file.person}")
-    private String personFile;
-
-
-    // tag::readerwriterprocessor[]
     @Bean
-    public FlatFileItemReader<Person> reader(@Value("#{jobParameters['localFilePath']}") String filePath) {
+    @StepScope
+    public FlatFileItemReader<Person> reader(@Value("#{jobParameters['system.file.person']}") String filePath) {
         LOGGER.info("localFilePath:{}", filePath);
         if (!filePath.matches("[a-z]+:.*")) {
             filePath = "file:" + filePath;
         }
-        LOGGER.info("personFile:{}", personFile);
         FlatFileItemReader reader = new PersonItemReader();
         reader.setResource(resourceLoader.getResource(filePath));
         return reader;
@@ -75,24 +75,23 @@ public class BatchConfiguration {
         writer.setDataSource(dataSource);
         return writer;
     }
-    // end::readerwriterprocessor[]
 
-    // tag::jobstep[]
     @Bean
     public Job importUserJob(JobCompletionNotificationListener listener) {
         LOGGER.info("import user job.");
-        return jobBuilderFactory.get("importUserJob")
+        return jobBuilderFactory.get("Import User Job")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .flow(step1())
                 .end()
                 .build();
     }
-
+//
 //    @Bean
 //    public Job job() {
 //        return jobBuilderFactory.get("job")
-//                .start(stepBuilderFactory.get("jobStep1")
+//                .start(stepBuilderFactory
+//                        .get("jobStep1")
 //                        .tasklet(new Tasklet() {
 //
 //                            @Override

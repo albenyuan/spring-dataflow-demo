@@ -13,7 +13,6 @@ import java.util.Arrays;
  * @Author Alben Yuan
  * @Date 2019-01-09 14:58
  */
-
 @EnableTask
 @SpringBootApplication
 public class TaskApplication {
