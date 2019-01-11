@@ -17,9 +17,14 @@
 
 - Spring可以让数据流服务器公开一个用于组成和部署数据管道的REST API。单独的shell使从命令行使用API变得容易。
 
+### 节点示意图
+
 ![data flow server](https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-server-arch.png '')
 
-![data flow server](http://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-metrics-arch.png '')
+
+###  流程结构
+
+![data flow server](https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-metrics-arch.png '')
 
 ## 环境
 
@@ -34,10 +39,6 @@
 ## 启动 
 
  - Data Flow Server支持动模式: Local, Cloud Foundry, Kubernetes
-
- - 安全认证
- 
-    ![auth](https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-authentication-options.png '')
 
 ### 本地启动 
 
