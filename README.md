@@ -17,7 +17,9 @@
 
 - Spring可以让数据流服务器公开一个用于组成和部署数据管道的REST API。单独的shell使从命令行使用API变得容易。
 
-![](https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-metrics-arch.png,'')
+![data flow server](https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-server-arch.png '')
+
+![data flow server](http://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-metrics-arch.png '')
 
 ## 环境
 
@@ -31,7 +33,11 @@
 
 ## 启动 
 
-Data Flow Server支持动模式: Local, Cloud Foundry, Kubernetes
+ - Data Flow Server支持动模式: Local, Cloud Foundry, Kubernetes
+
+ - 安全认证
+ 
+    ![auth](https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/master/spring-cloud-dataflow-docs/src/main/asciidoc/images/dataflow-authentication-options.png '')
 
 ### 本地启动 
 
@@ -128,11 +134,15 @@ Data Flow Server支持动模式: Local, Cloud Foundry, Kubernetes
 ### 说明
 
   - type
+  
     + app
     + source
     + processor
     + sink
     + task
+    
+    [各类型支持的应用](http://docs.spring.io/spring-cloud-dataflow/docs/1.7.3.RELEASE/reference/htmlsingle/#_available_applications)
+   
   - name
   
     系统唯一。不唯一时，可通过参数强制覆盖
@@ -206,6 +216,21 @@ Data Flow Server支持动模式: Local, Cloud Foundry, Kubernetes
       + `app import --uri file:///<YOUR_FILE_LOCATION>/stream-apps.properties`
       
       + `app import --uri http://<YOUR_HOST_LOCATION>/stream-apps.properties`
+      
+      
+### Questions
+
+ - Apps的Properties是怎么配置和使用的?
+ 
+ - 当一个Task中含有多个Job时，是否可以单独运行其中的部分Job？
+ 
+ - 当一个task中含有多个Job是，参数是如何使用的？
+ 
+ - 执行一个task时，配置的`Task Arguments`和`Task Properties`有什么区别，`Task Properties`是做什么用的；
+ 
+ - Skipper
+ 
+ - 创建了三个Task？
 
 
 
